@@ -1,0 +1,100 @@
+body{
+    margin: 0;
+    padding: 0;
+    background: #888888;
+}
+button{
+    background: #FFFFFF;
+}
+#header{
+    height: 50px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: #4c4c4c;
+}
+#container{
+    display: flex;
+    align-items: stretch;
+    margin: 0;
+}
+#left_div{
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    background: #CCCCCC;
+}
+#room_list{
+    width: 300px;
+    height: 500px;
+    margin: auto;
+    background: #FFFFFF;
+
+}
+#right_div{
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    padding:5px;
+    top: 50px;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+    background: #333;
+}
+#myprofile{
+    background: white;
+    text-align: center;
+}
+#prof_text{
+    background: #FFE08C;
+    margin-bottom: 10px;
+}
+#prof_name{
+    background: #FFE08C;
+}
+#make_room_btn{
+    width: 100%;
+    height: 30px;
+}
+
+#f_div{
+    width: 300px;
+    height: 260px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    border: 5px solid #FFE08C;
+    border-radius: 15px;
+    background: #FFFFFF;
+}
+#f_table{
+    height: 210px;
+    border-collapse: collapse;
+    margin: auto;
+    margin-bottom: 8px;
+    text-align: center;
+
+}
+#f_table td{
+    align-items: center;
+    border-bottom: 3px solid #FFE08C;
+}
+.td1{
+    text-align: right;
+}
+input[type=text]{
+    width: 90%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+}

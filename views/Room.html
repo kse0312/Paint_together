@@ -1,0 +1,721 @@
+ <head>
+  <title>Artnet</title>
+  <meta charset="UTF-8" />
+  <link href="../css/styles.css" rel="stylesheet" type="text/css">
+  <link href="../css/Roomcss.css" rel="stylesheet" type="text/css">
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script type="text/javascript" src="../js/roomjs.js"></script>
+  <script src="../js/cook.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script>
+    var room = <%=room%>;
+    var code = [];
+    for(var i=0;i<<%=max%>;i++){
+      code[i]='';
+    }
+    code[0]=<%=uid%>;
+    var socket = io.connect();
+    var maker;
+
+    jQuery(document).ready(function(){
+      var socket = io.connect();
+      socket.on('connect', function() {
+
+      var name=<%=uid%>;
+        var room=<%=room%>;
+        console.log('connect');
+        socket.emit("access", {
+            room : room
+            , name : name
+        });
+      })
+
+    socket.on("message", function(data) {
+      pushMessage(data);
+    });
+    socket.on("first", function(data) {
+      draw.drawfromServer(data);
+    });
+    // 채팅방 접속 or 퇴장시 실행되는 알림 메세지
+    socket.on("contact", function(data) {
+      var x=data.list;
+      console.log(data.list[0].user);
+      serverMessage(data);
+      document.getElementById('users').value=data.count;
+      for(var i=0;i<<%=max%>;i++){
+          document.getElementById('prt'+i).src="../img/character/0_0.png";
+          document.getElementById('name'+i).value='';
+          document.getElementById('member'+i).style='display:none';
+
+      }
+      for(var i=0;i<data.list.length;i++){
+        if(<%=uid%>==x[i].uid){
+          document.getElementById('numb').value=i+1;
+          document.getElementById('member'+i).style='display:none';
+        }else{
+          document.getElementById('prt'+i).src="../img/character/"+x[i].portrait+"_"+x[i].color+".png";
+          document.getElementById('name'+i).value=x[i].user;
+          document.getElementById('member'+i).style='display:block';
+        }
+
+
+
+      }
+    });
+
+    socket.on("linetoclient", function(data) {
+      draw.drawfromServer(data);
+    });
+
+  });
+
+  function send(){
+    socket.emit("message", {
+        room : <%=room%>
+      , name : jQuery("#myname").val()
+      , message : jQuery("#inputMessage").val()
+      , date : new Date().toUTCString()
+    });
+    jQuery("#inputMessage").val("");
+  }
+  function serverMessage(data){
+    var chat = document.getElementById('chat')
+    var message = document.createElement('div')
+    var node = document.createTextNode(`Server: ${data.message}`)
+    var className = ''
+    switch(data.type) {
+      case 'connect':
+        className = 'connect'
+        break
+
+      case 'disconnect':
+        className = 'disconnect'
+        break
+    }
+    message.classList.add(className)
+    message.appendChild(node)
+    chat.appendChild(message)
+  };
+  function pushMessage(data) {
+    var chat = document.getElementById('chat')
+    var message = document.createElement('div')
+    var node = document.createTextNode(`${data.name}: ${data.message}`)
+    var className = 'other'
+    message.classList.add(className)
+    message.appendChild(node)
+    chat.appendChild(message)
+    document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+  };
+
+  var savecvs;
+  var canvas2;
+  var canvas2;
+  var backcvs;
+  var ctx
+  var ctx2;
+  var btx;
+  var stx;
+  var colors;
+  var range_val;
+  var range;
+  var background;
+  var commend=[];
+  var frontcommend=[];
+    //페이지 로딩 시 시작 부분
+    $(document).ready(function() {
+        backcvs = document.getElementById("backcvs");
+        canvas = document.getElementById("canvas");
+        canvas2 = document.getElementById("canvas2");
+        btx= backcvs.getContext('2d');
+        ctx= canvas.getContext('2d');
+        ctx2=canvas2.getContext('2d');
+        colors = document.getElementsByClassName("jsColor");
+        range_val = document.getElementById("range_val");
+        range = document.getElementById("jsRange");
+        const pen = document.getElementById("pen");
+        const save = document.getElementById("Save");
+        const erase = document.getElementById("Erase");
+        const palette = document.getElementById("palette");
+        const clear = document.getElementById("clear");
+        const nowop = document.getElementById("nowop");
+        const back = document.getElementById("back");
+        const penfill = document.getElementById("penfill");
+
+        var background="#FFFFFF";
+        btx.fillStyle = "#FFFFFF";
+        btx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx2.lineCap = "round";
+        ctx2.lineJoin = "round";
+
+
+        var history = document.getElementById("history").value;
+        history='<%=data%>';
+        var text = history.split(',');
+        draw.drawfirst(text);
+
+        handlePenClick = e => { //둥근 펜 사용
+          nowop.src="../img/button/pencil.png";
+          shape.fill=0;
+          shape.type='pen';
+          ctx.strokeStyle=shape.color;
+        };
+        /*handleFillClick = e => { //색 채우기
+          nowop.src="../img/button/fill.png";
+          shape.fill=0;
+          shape.type='fill';
+        };*/
+        handleEraseClick = e => {  //삭제
+          nowop.src="../img/button/eraser.png";
+          shape.fill=0;
+          shape.type='erase';
+          ctx.strokeStyle = background;
+        };
+        var numb=0;
+        changeColorByPalette = e => {  //컬러팔레트 색상으로 변경
+          const color = e.target.value;
+          ctx.strokeStyle = color;
+          ctx.fillStyle = color;
+          document.getElementById("nowcolor").style.backgroundColor=color;
+          shape.color=color;
+          if(numb==7){
+            numb=0;
+            document.getElementById("used"+numb).value=color;
+            document.getElementById("used"+numb).style.backgroundColor=color;
+            numb++;
+          }else{
+            document.getElementById("used"+numb).value=color;
+            document.getElementById("used"+numb).style.backgroundColor=color;
+            numb++;
+          }
+
+        };
+
+        handleSaveClick = () => {   //캔버스 저장
+          stx.drawImage(backcvs,0,0);
+          stx.drawImage(canvas2,0,0);
+          stx.drawImage(canvas,0,0);
+          var image = savecvs.toDataURL();
+          const link = document.createElement("a");
+          link.href = image;
+          link.download = "Artnet";
+          link.click();
+          stx.clearRect(0, 0, canvas.width, canvas.height);
+          btx.fillRect(0, 0, canvas.width, canvas.height);
+        };
+
+        handleRangeChange = e => {    //브러쉬 사이즈 변경
+          const brushWidth = e.target.value;
+          ctx.lineWidth = brushWidth;
+          shape.width=brushWidth;
+        };
+        handlePenfillClick = e => {
+          shape.type='penfill';
+          nowop.src="../img/button/penfill.png";
+        }
+        handleFillbackChange = e => {
+          nowop.src="../img/button/fillback.png";
+          shape.type='fillback';
+          shape.fill=1;
+          background=shape.color;
+        }
+        if(range){range.addEventListener("input", handleRangeChange);}
+        if(pen){pen.addEventListener("click", handlePenClick);}
+        if(erase){erase.addEventListener("click", handleEraseClick);}
+        if(palette){palette.addEventListener("blur", changeColorByPalette);}
+        if(save){save.addEventListener("click", handleSaveClick);}
+        if(fillback){fillback.addEventListener("click", handleFillbackChange);}
+        if(penfill){penfill.addEventListener("click", handlePenfillClick);}
+
+        // jQuery bin를 이용하여 canvas에 마우스 시작, 이동, 끝 이벤트 핸들러 등록
+        $('#canvas').on('mousedown', draw.start);
+        $('#canvas').on('mousemove', draw.move);
+        $('#canvas').on('mouseup',  draw.end);
+        $('#clear').on('click', draw.clear);
+        $('#canvas').on("mouseleave", draw.end);
+        canvas.addEventListener("touchstart", draw.tstart,false);
+        canvas.addEventListener("touchmove",draw.tmove,false);
+        canvas.addEventListener("touchend", draw.end, false);
+        canvas.addEventListener("touchleave", draw.end, false);
+    });
+      var shape = {
+          color : '#000000',
+          width : 3,
+          fill : 0,
+          type : 'pen',
+          change : function(){
+            ctx.strokeStyle=shape.color;
+            ctx.lineWidth=shape.width;
+            fill=shape.fill;
+          }
+      };
+      var msg = {
+          line : {
+            send : function(type,x,y,f){
+                socket.emit('linesend', {
+                  'uid' : code[0],
+                  'room':<%=room%>,
+                  'type':type,
+                  'x':x,
+                  'y':y,
+                  'color':ctx.strokeStyle,
+                  'width':ctx.lineWidth,
+                  'fill':shape.fill,
+              });
+            }
+          }
+      };
+      // 그리기 부분에 대한 설정
+      var draw = {
+          drawing : null,
+          start : function(e) {
+            this.drawing = true;
+            var x=e.offsetX;
+            var y=e.offsetY;
+            if(shape.type=='erase'){
+              ctx.strokeStyle=background;
+              ctx.beginPath();
+              ctx.moveTo(x,y);
+              ctx.lineTo(x,y);
+              ctx.stroke();
+            }else if(shape.type=='fillback'){
+              btx.fillStyle=shape.color;
+              background=shape.color;
+              btx.fillRect(0,0,canvas.width, canvas.height);
+            }
+            else{
+              ctx.beginPath();
+              ctx.moveTo(x,y);
+              ctx.lineTo(x,y);
+              ctx.stroke();
+            }
+            //msg.line.send('start', e.offsetX, e.offsetY, 0);
+            addHistory('start');
+            if(shape.type=='erase'){
+              addHistory(shape.type+' '+background+' '+shape.width);
+              addHistory(x+' '+y);
+            }else{
+              addHistory(shape.type+' '+shape.color+' '+shape.width);
+              addHistory(x+' '+y);
+            }
+
+          },
+          tstart : function(e){
+            e.preventDefault();
+            var touches = e.changedTouches;
+            var rect = canvas.getBoundingClientRect();
+            var x=touches[0].pageX-rect.left;
+            var y=touches[0].pagY-rect.top;
+            this.drawing = true;
+            if(shape.type=='erase'){
+              ctx.strokeStyle=background;
+              ctx.beginPath();
+              ctx.moveTo(x,y);
+              ctx.lineTo(x,y);
+              ctx.stroke();
+            }else if(shape.type=='fillback'){
+              ctx.beginPath();
+              btx.fillStyle=shape.color;
+              background=shape.color;
+              btx.fillRect(0,0,canvas.width, canvas.height);
+            }
+            else{
+              ctx.beginPath();
+              ctx.moveTo(x,y);
+              ctx.lineTo(x,y);
+              ctx.stroke();
+            }
+            //msg.line.send('start', e.offsetX, e.offsetY, 0);
+            addHistory('start');
+            if(shape.type=='erase'){
+              addHistory(shape.type+' '+background+' '+shape.width);
+              addHistory(x+' '+y);
+            }else{
+              addHistory(shape.type+' '+shape.color+' '+shape.width);
+              addHistory(x+' '+y);
+            }
+          },
+          move : function(e) {
+            var x=e.offsetX;
+            var y=e.offsetY;
+            if(this.drawing){
+              if(shape.type=='fillback'){
+
+              }else{
+                ctx.lineTo(x,y);
+                ctx.stroke();
+                addHistory(x+' '+y);
+              }
+
+            }
+          },
+          tmove : function(e){
+            e.preventDefault();
+            var touches = e.changedTouches;
+            var rect = canvas.getBoundingClientRect();
+            var x=touches[0].pageX-rect.left;
+            var y=touches[0].pageY-rect.top;
+            if(this.drawing){
+              if(shape.type=='fillback'){
+
+              }else{
+                ctx.lineTo(x,y);
+                ctx.stroke();
+                addHistory(x+' '+y);
+              }
+            }
+          },
+          end : function(e){
+            if(this.drawing){
+              if(shape.type=='penfill'){
+                ctx.closePath();
+                ctx.fill();
+              }
+              else{
+                ctx.closePath();
+              }
+              this.drawing = false;
+              //msg.line.send('end');
+              addHistory('end');
+              var history=document.getElementById("history").value;
+              var x = history.split('\n');
+              socket.emit('linesend', {
+                'uid':<%=uid%>,
+                'room':<%=room%>,
+                'type':'text',
+                'text':x
+              });
+              document.getElementById("history").value='';
+              shape.change;
+              ctx.lineWidth=shape.width;
+            }
+          },
+          clear : function(e) {
+              // 전체 지우기
+              this.drawing = true;
+              background="#FFFFFF";
+              btx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx2.clearRect(0, 0, canvas.width, canvas.height);
+              btx.fillStyle=background;
+              btx.fillRect(0,0,canvas.width, canvas.height);
+              //msg.line.send('clear');
+              addHistory('clear');
+              var x =   document.getElementById("history").value.split('\n');
+              socket.emit('linesend', {
+                'uid':<%=uid%>,
+                'room':<%=room%>,
+                'type':'clear',
+                'text':x
+              });
+              document.getElementById("history").value = '';
+          },
+          drawfirst: function(text){
+            var xy;
+            var type;
+            var t=text;
+            for(var i=0;i<text.length-1;i++){
+              if(t[i]=='start'){
+                i++;
+                var x=t[i].split(' ');
+                type=x[0];
+                ctx.lineWidth=x[2];
+                ctx.strokeStyle=x[1];
+                ctx.fillStyle=x[1];
+                ctx.beginPath();
+                if(type=='fillback'){
+                  background=x[1];
+                  btx.fillStyle=x[1];
+                  btx.fillRect(0,0,canvas.width, canvas.height);
+                  btx.stroke();
+                }
+                else if(type=='erase'){
+                  ctx.lineWidth=x[2];
+                  ctx.strokeStyle = btx.fillStyle;
+                  i++;
+                  xy=t[i].split(' ');
+                  ctx.beginPath();
+                  ctx.moveTo(xy[0], xy[1]);
+                  ctx.lineTo(xy[0],xy[1]);
+                  ctx.stroke();
+                  i++;
+                }
+                else{
+                  i++;
+                  xy=t[i].split(' ');
+                  ctx.moveTo(xy[0], xy[1]);
+                  ctx.lineTo(xy[0],xy[1]);
+                  ctx.stroke();
+                  i++;
+                }
+              }
+              else if(t[i]=='end'){
+                if(type=='penfill'){
+                    ctx.closePath();
+                    ctx.fill();
+                }else{
+                  ctx.closePath();
+                }
+              }
+              else if(t[i]=='clear'){
+                background="#FFFFFF";
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle=background;
+                ctx.fillRect(0,0,canvas.width, canvas.height);
+                document.getElementById("history").value = '';
+              }
+              else{
+                xy=t[i].split(' ');
+                ctx.lineTo(xy[0],xy[1]);
+                ctx.stroke();
+              }
+            }
+            shape.change();
+          },
+          drawfromServer : function(data) {
+            // 그리기 시작 시에 좌표 이동, 색상, 넓이 설정
+              var xy;
+              var type;
+              t=data.text;
+              for(var i=0;i<t.length-1;i++){
+                if(t[i]=='start'){
+                  i++;
+                  var x=t[i].split(' ');
+                  type=x[0];
+                  ctx2.lineWidth=x[2];
+                  ctx2.strokeStyle=x[1];
+                  ctx2.fillStyle=x[1];
+                  ctx2.beginPath();
+                  if(type=='fillback'){
+                    background=x[1];
+                    btx.fillStyle=x[1];
+                    btx.fillRect(0,0,canvas.width, canvas.height);
+                    btx.stroke();
+                    break;
+                  }
+                  else if(type=='erase'){
+                    ctx2.lineWidth=x[2];
+                    ctx2.strokeStyle = btx.fillStyle;
+                    i++;
+                    xy=t[i].split(' ');
+                    ctx2.beginPath();
+                    ctx2.moveTo(xy[0], xy[1]);
+                    ctx2.lineTo(xy[0],xy[1]);
+                    ctx2.stroke();
+                    i++;
+                  }
+                  else{
+                    i++;
+                    xy=t[i].split(' ');
+                    ctx2.moveTo(xy[0], xy[1]);
+                    ctx2.lineTo(xy[0],xy[1]);
+                    ctx2.stroke();
+                    i++;
+                  }
+                }
+                else if(t[i]=='end'){
+                  if(type=='penfill'){
+                      ctx2.closePath();
+                      ctx2.fill();
+                  }else{
+                    ctx2.closePath();
+                  }
+                  break;
+                }
+                else if(t[i]=='clear'){
+                  background="#FFFFFF";
+                  btx.clearRect(0, 0, canvas.width, canvas.height);
+                  ctx.clearRect(0, 0, canvas.width, canvas.height);
+                  ctx2.clearRect(0, 0, canvas.width, canvas.height);
+                  btx.fillStyle=background;
+                  btx.fillRect(0,0,canvas.width, canvas.height);
+                  document.getElementById("history").value = '';
+                }
+                else{
+                  xy=t[i].split(' ');
+                  ctx2.lineTo(xy[0],xy[1]);
+                  ctx2.stroke();
+                }
+              }
+            }
+      };
+      /*else if(data.type=='fill'){ 레이아웃 분리 후 사용할 부분
+                background=x[1];
+                ctx.fillStyle=x[1];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillRect(0,0,canvas.width, canvas.height);
+                ctx.stroke();
+              }
+              if ( data.type == 'start' ){
+                  ctx.strokeStyle = data.color;
+                  ctx.lineWidth = data.width;
+                  if(data.fill==1){
+                    background=data.color;
+                    ctx.fillStyle=data.color;
+                    ctx.fillRect(0,0,canvas.width, canvas.height);
+                  }
+                  ctx.beginPath();
+                  ctx.moveTo(data.x, data.y);
+                  ctx.lineTo(data.x,data.y);
+                  ctx.stroke();
+              }
+              // 그리기
+              if (data.type == 'move'){
+                ctx.lineTo(data.x,data.y);
+                ctx.stroke();
+              }
+              if(data.type == 'erase'){
+                ctx.strokeStyle = background;
+              }
+              // 그리기 끝남
+              if (data.type == 'end'){
+              }
+              // 전체 지우기
+              if(data.type == 'clear'){
+                history='';
+                background="#FFFFFF";
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+              }*/
+      function colorSet(target){    //컬러박스 색상으로 변경
+        btx.fillStyle = target.value;
+        ctx.strokeStyle = target.id;
+        ctx.fillStyle = target.id;
+        colors.value=target.id;
+        document.getElementById("nowcolor").style.backgroundColor=target.id;
+        shape.color=target.id;
+      };
+      function usedcolorSet(target){    //이전 사용색상으로 변경
+        btx.fillStyle = target.value;
+        ctx.strokeStyle = target.value;
+        ctx.fillStyle = target.value;
+        colors.value=target.value;
+        document.getElementById("nowcolor").style.backgroundColor=target.value;
+        shape.color=target.value;
+      }
+
+      function addHistory(cmd) {
+        var history = document.getElementById("history").value;
+        history += cmd + "\n";
+        document.getElementById("history").value = history;
+        document.getElementById("history").scrollTop = document.getElementById("history").scrollHeight;
+      }
+</script>
+</head>
+<body  oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+    <div id="header">
+      <div id="banner">
+          <a href="/OutR/<%=room%>">
+            <img src="../img/bannerlogo.png" alt="">
+          </a>
+      </div>
+    </div>
+    <div id="main">
+      <div class="left">
+        <div id="drawing">
+          <table id="optable" >
+            <tr>
+              <th>
+                <input type=text id=roomid value="<%=room%>" style="width:50px;vertical-align:right"/> 번 방
+              </th>
+              <th>
+                <p style="font-size:26px"><input type="text" id="roomsubject" value="<%=roomname%>" readonly/></P>
+              </th>
+            </tr>
+            <tr>
+            <td id="state" style="border-right: 5px solid #FFE08C;font-size:22px;">
+              현재 상태</br>
+              <img id="nowop" src="../img/button/pencil.png" width=30 alt="">&nbsp
+              <button id="nowcolor" style='background:#000;width:30px;height:30px;border:1;outline:0'></button></br>
+            </td>
+            <td rowspan=4 background='../img/background.png'>
+              <!--<canvas id="savecvs" class="canvas" width="1080" height="720" style="cursor:crosshair;position:absolute;z-index:0;display:none"></canvas>-->
+              <canvas id="backcvs" class="canvas" width="1080" height="720" style="cursor:crosshair;position:absolute;z-index:0"></canvas><!--배경 레이아웃-->
+              <canvas id="canvas" class="canvas" width="1080" height="720" style="cursor:crosshair;position:absolute;z-index:3"></canvas><!--사용자 레이아웃-->
+              <canvas id="canvas2" class="canvas2" width="1080" height="720" style="cursor:crosshair;position:relative;z-index:2"></canvas><!--다른 사용자들 레이아웃-->
+            </td>
+          </tr>
+            <tr>
+              <td id="option" style="border-right: 5px solid #FFE08C;vertical-align:top;"><!--그림 기능 버튼 -->
+                <button class="op" id="pen"><img src="../img/button/pencil.png" width=30 alt=""></button>
+                <button class="op" id="penfill"><img src="../img/button/penfill.png" width=30 alt=""></button>
+                <!--<button class="op" id="fill"><img src="../img/button/fill.png" width=30 alt=""></button>-->
+                <button class="op" id="Erase"><img src="../img/button/eraser.png" width=30 alt=""></button>
+                </br></br>
+                Size:
+                <input type="text" id="range_val" style="width:30px;font-size:15px" value="3" readonly>
+                <input type="range" name="" id="jsRange"
+                  min="1" max="30.0" value="3" step="0.5" style="width:120px;" onchange="document.getElementById('range_val').value=this.value;"/>
+                </br></br>
+                Color
+                <input type='color' class="jscolor" id="palette" value='#000000' onchange="" />&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+
+                <div id="paletteBox" style="margin-bottom:20px">
+                </div></br></br></br></br></br>
+                <!--<button class="op" id="back"><img src="../img/button/back.png" width=30 alt=""></button>-->
+                &nbsp&nbsp
+                <button class="op" id="fillback"><img src="../img/button/fillback.png" width=30 alt=""></button>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                <button class="op" id="clear"><img src="../img/button/clear.png" width=30 alt=""></button></br></br>
+                <button class="op" id="Save"><img src="../img/button/save.png" width=30 alt=""></button>
+              </td>
+            </tr>
+            <tr>
+                <td style="border-right: 5px solid #FFE08C">
+                    <a href=/Roomlist/1><button id="leave">방 나가기</button></a>
+                </td>
+            </tr>
+            <tr>
+              <td style="border-right: 5px solid #FFE08C;">
+                <textarea id="MEMO"  style="border : 5px solid #FFE08C;margin-right:5px;width:140px;height:200px;text-align: left;font-size:17px" readonly>같은 UID 그림판 전송 안됩니다               본인->본인 전송 X
+                </textarea>
+                <textarea id="history"  style="border : 5px solid #FFE08C;margin-right:5px;width:140px;height:250px;text-align: left;display:none" readonly></textarea>
+                <!--그림 이력 저장 (기능 이름, 좌표, 색상 등)-->
+              </td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+      <div class="right">
+        <div id="chatlist" style="font-size:20px"><!--방 사용자 정보 목록 -->
+          인원
+          <input id="users" type=text value="0" style="width:30px;font-size:18px" readonly/>/
+          <input id="max" type=text value="<%=max %>" style="width:30px;font-size:18px" readonly/></br>
+          <table id="mytable" width="100%" style="border: 3px solid #FFE08C;border-radius:15px">
+              <tr id="member" height=20 >
+                <td><input type="text" id="numb" class="number" value="0" style="width:30px;" readonly/></td>
+                <td><img id="portrait" src="../img/character/0_0.png" width=30px alt=""></td>
+                <td><input type="text" id="myname" class="name" value="<%=name%>" readonly/></td>
+              </tr>
+          </table>
+          <div style="width:260;height:180px;overflow:auto">
+            <table id="mytable" width="100%" style="cellspacing='0';cellpadding='0'">
+              <%for(var i=0;i<max;i++){%>
+                <tr id="member<%=i%>" height=20 style="display:none">
+                  <td><input type="text" id="numb<%=i%>" class="number" style="width:30px" value="<%=i+1%>" readonly/></td>
+                  <td><img id="prt<%=i%>" src="../img/character/0_0.png" width=30px alt=""></td>
+                  <td><input type="text" id="name<%=i%>" class="name" value="" readonly/></td>
+                </tr>
+              <%}%>
+            </table>
+          </div>
+        </div>
+        <div  id="chatpage">
+          <div id="chating"><!--채팅창 -->
+            <div id="chat" style="padding:5px">
+            </div>
+            <div id="inputmsg">
+              <input type="text" id="inputMessage" placeholder="메시지를 입력해주세요.." onKeypress="javascript:if(event.keyCode==13){send()}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      init();
+      getport();
+    </script>
+</body>

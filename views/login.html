@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <title>Make Character</title>
+    <script type="text/javascript" src="js/script_login.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h3>Make Character</h3>
+        <br>
+        <div id="make_chracter">
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <img id="char_img" src="/img/character/0_0.png"/>
+                    <br>
+                    <label for="f_user_name">이름</label>
+                    <input type="text" name="f_user_name" id="f_user_name">
+                    <br>
+                    <button type="button" onclick="Bef_btn(0);" ><</button>
+                    <input type="text" name="f_img_0" id="f_img_0" value="0">
+                    <button type="button" onclick="Aft_btn(0);" >></button>
+                    <br>
+                    <button type="button" onclick="Bef_btn(1);" ><</button>
+                    <input type="text" name="f_img_1" id="f_img_1" value="0">
+                    <button type="button" onclick="Aft_btn(1);" >></button>
+                </div>
+                <button type="submit">확인</button>
+                <button type="button" onclick="make_cancle();">취소</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

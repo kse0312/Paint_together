@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Canvas</title>
+    <link rel="stylesheet" href="css/style_canvas.css">
+    <link rel="stylesheet" href="css/style_canvas_right.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/script_canvas.js"></script>
+    <script type="text/javascript" src="js/script_socket.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div id="center">
+            <div id="board">
+                <div id="canvas_div" style="background:#222;display:flex;">
+                    <canvas id="myCanvas" width="1080" height="720" style="background:white;margin:auto"></canvas>
+                </div>
+            </div>
+        </div>
+        <div id="header">
+            <div id="top_tools">
+                <button class="top_tool">+</button>
+                <button class="top_tool">-</button>
+                <button class="top_tool">3</button>
+                <button class="top_tool">4</button>
+                <button class="top_tool">5</button>
+                <button class="top_tool" onclick="saveImage();" >d</button>
+            </div>
+            <div id="room_information" style="padding:5px">
+                <input type="text" class="inf_text" id="subject" value="[XX번방] TESTROOM">
+                <input type="text" class="inf_text" id="party_numb" size="2" value="00/10">
+                <button class="top_tool" onclick="location.href='/'">나가기</button>
+            </div>
+        </div>
+
+        <div id="left_tools">
+            <button class="lef_tool" id="n_op" >p</button>
+            <br><br>
+            <button class="lef_tool" id="pen"  >p</button>
+            <button class="lef_tool" id="erase">e</button>
+            <button class="lef_tool" id="paint">P</button>
+            <button class="lef_tool" id="fill">f</button>
+            <button class="lef_tool" id="1"></button>
+            <button class="lef_tool" id="c">7</button>
+            <button class="lef_tool" id="clear">c</button>
+        </div>
+        <div id="right_tools">
+            <div id="palette_div">
+                <input type='color' id="palette" value='#000000' onchange="" autocomplete="ture"/>
+                <input type="text"  id="color" value="#000000" readonly/><br>
+                <div id="paletteBox">
+                </div>
+            </div>
+            <div id="right_div2">
+                <div style="white-space: nowrap;">
+                    size : <input id="size_result" value="10" class="inf_text"><br>
+                    <input id="size_pen" type="range" min="1" max="50" value="10" style="width:200px;" oninput="size_change()">
+                </div>
+            </div>
+            <div style="min-height:100px;background:#4c4c4c;margin-bottom:5px;overflow:auto;padding:5px;">
+            </div>
+            <div id="chat_div">
+                chat
+                <div id="chatLogs">
+                </div>
+                <form name="message" id="message" onsubmit="send()">
+                    <input type="text" id="msgForm">
+                    <button type="submit">-></button>
+                </form>
+            </div>
+        </div>
+        <div id="cursor" class="cursor"></div>
+    </div>
+    </body>
+</html>                  

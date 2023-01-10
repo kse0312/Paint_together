@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Room List</title>
+    <link rel="stylesheet" href="css/style_main.css">
+    <link rel="stylesheet" href="css/style_checkbox.css">
+</head>
+<body>
+    <div id="header">
+        Artnet
+    </div>
+    <div id="container">
+        <div id="left_div">
+            <div id="room_list">
+
+            </div>
+        </div>
+
+        <br>
+        <div id="f_div" style="display: none">
+            방 만들기
+            <form action="/canvas" method="post" >
+                <table id="f_table">
+                    <tr><td class="td1">이름</td>
+                        <td colspan="2"><input type="text" name="f_subject"  id="f_subject"></td></tr>
+                    <tr><td class="td1">설명</td>
+                        <td colspan="2"><input type="text" name="f_text"  id="f_text"></td></tr>
+                    <tr><td class="td1">인원 수</td>
+                        <td colspan="2"><input type="text" name="f_numb"  id="f_numb"></td></tr>
+                    <tr><td class="td1">공개</td>
+                        <td style="text-align: center"><input type="checkbox" name="f_onoff" class="switch" id="switch1">
+                            <label for="switch1" class="switch_label" id="switch_label1"><span id="onf1" class="onf_btn"></span> </label></td>
+                        <td style="text-align: left">비공개</td></tr>
+                    <tr><td class="td1">비밀번호</td>
+                        <td colspan="2"><input type="text" name="f_passwd"  id="f_passwd"></td></tr>
+                </table>
+                <button id="f_ok" type="submit">확인</button>
+                <button id="f_xx" type="button" onclick="make_div_on();">취소</button>
+            </form>
+        </div>
+        <div id="right_div">
+            <div id="myprofile">
+                <div id="prof_text">내 정보</div>
+                <img id="prof_img" src="/img/character/<%=user_img%>.png"/>
+                <div id="prof_name"><%=user_name%></div>
+            </div>
+            <div>
+                <button id="make_room_btn" onclick="make_div_on();">그림판 만들기</button>
+                <button id="make_chat_btn" onclick="location.href='/chat';">채팅 만들기</button>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const f_div = document.getElementById('f_div');
+        const f_sub = document.getElementById('f_subject');
+        const f_txt = document.getElementById('f_text');
+        const f_num = document.getElementById('f_numb');
+
+        /** 방 생성 창 열기 */
+        function make_div_on(){
+            if(f_div.style.display==='none'){
+                f_div.style.display=''
+                f_sub.value = '';
+                f_txt.value = '';
+                f_num.value ='';
+            }else{
+                f_div.style.display='none'
+            }
+
+        }
+
+
+        // function join_room(data){
+        //     room_numb=data;
+        //     $("#user_text").val(room_numb+'번방에 입장하시겠습니까?');
+        //     $("#numForm").val(room_numb);
+        //     $("#make_room").css('display','');
+        //     $("#jn_room_div").css('display','');
+        //     //입장 에러 있음
+        // }
+
+
+    </script>
+</body>
+</html>

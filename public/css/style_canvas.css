@@ -1,0 +1,141 @@
+*{
+    color:white;
+    font-size: 14px;
+}
+#header{
+    width: 100%;
+    background: #222222;
+    right: 0;
+    top: 0;
+    left: 0;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: absolute;
+}
+#container{
+    background: #4c4c4c;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+    display: block;
+    z-index: 100;
+    top: 0;
+    left: 0;
+}
+button{
+    margin:0;
+    background-color: #4c4c4c;
+    border-color: #000;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    display: inline-block;
+    white-space: nowrap;                                    /*줄바꿈없애기*/
+    box-shadow: inset 1px 1px 0 hsl(0deg 0% 100% / 10%);    /*그림자*/
+}
+input{
+    outline:none;
+}
+li{
+    height:25px;
+}
+td{
+    border:1px solid white;
+}
+
+
+
+#top_tools{
+    background: #555;
+    position: relative;
+    display: flex;
+    padding: 4px;
+    z-index: 2;
+    flex: 1;
+    -webkit-box-align: start;
+}
+#room_information{
+    background: #444;
+    position: relative;
+    display: flex;
+    padding: 4px;
+    -webkit-box-align: start;
+}
+#left_tools{
+    top: 50px;
+    bottom: 0;
+    width: 45px;
+    overflow: hidden;
+    background: #333;
+    position: absolute;
+    left: 0;
+    padding:5px;
+}
+#right_tools{
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    padding:5px;
+    top: 50px;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+    background: #333;
+    position: absolute;
+}
+
+#center{
+    background: #FFF;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    touch-action: none;
+}
+#board{
+    background: #ccc;
+    position: absolute;
+    top: 50px;
+    left: 39px;
+    right: 250px;
+    bottom: 0;
+}
+#canvas_div{
+    background:#888;
+    width:100%;
+    height:100%;
+    text-align:center;
+    cursor:none;
+}
+
+/* 캔버스 */
+#mycanvas{
+    cursor:none;
+}
+
+/* 방제,인원수 글씨 */
+.inf_text{
+    background:none;
+    margin-right:3px;
+    border:0;
+}
+
+.chat_{
+    background:white;
+    color:black;
+}
+
+/* canvas 커스텀 커서 */
+.cursor {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid gray;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1000;
+}

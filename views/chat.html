@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Socket.io Chat</title>
+    </head>
+    <body>
+        <div class="container">
+            <h3>Chat</h3>
+            <input type="text" id="room" value='번방'>
+            <input type="text" id="curp" value="">/<input type="text" id="maxp" value=""> <button onclick="location.href='/list'">나가기</button>
+            <br><br>
+            <div id="user_list">
+            </div>
+            <div>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="msgForm">Message: </label>
+                        <input type="text" class="form-control" id="msgForm">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </form><br>
+            </div>
+            <div id="chatLogs"></div>
+            <!--img src="/img/character/0_0.png"/-->
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let room_numb = '<%=numb%>';
+            let room_name = '<%=room%>';
+            let user_name = '<%=user.id%>';
+
+            let state = '<%=state%>';
+
+            if(state=='0'){
+                socket.emit("Create_room", {
+                    room    : room_numb,
+                    room_na : room_name,
+                    user_id : user_name,
+                    name    : user_name
+                });
+            }
+            else{
+                socket.emit("Join_room", {
+                    room    : room_numb,
+                    room_na : room_name,
+                    user_id : user_name,
+                    name    : user_name
+                });
+            }
+
+            // 서버로부터의 메시지가 수신되면
+            socket.on("login", function(data) {
+                $('#room').val(data.data.room+'번방');
+                $('#curp').val(data.cur.room_cur);
+                $('#maxp').val(data.cur.room_max);
+                list_change(data.cur.room_user);
+                $("#chatLogs").append("<div style='color:blue;'><strong>" + data.data.name + "</strong>님이 입장하셨습니다.</div>");
+            });
+
+            socket.on("logout", function(data) {
+                list_change(data.user);
+                $("#chatLogs").append("<div style='color:red;'><strong>" + data.name + "</strong>님이 퇴장하셨습니다.</div>");
+                $('#curp').val(data.numb);
+            });
+
+            // 서버로부터의 메시지가 수신되면
+            socket.on("chat", function(data) {
+                $("#chatLogs").append("<div>" + data.from.name + ": " +data.msg + "</div>");
+            });
+
+            // Send 버튼이 클릭되면
+            $("form").submit(function(e) {
+                e.preventDefault();
+                var $msgForm = $("#msgForm");
+
+                // 서버로 메시지를 전송한다.
+                socket.emit("chat", { name: name, msg: $msgForm.val() });
+                $msgForm.val("");
+            });
+
+            function makeRandomName(){
+                var name = "";
+                var possible = "abcdefghijklmnopqrstuvwxyz";
+                for( var i = 0; i < 3; i++ ) {
+                    name += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+                return name;
+            }
+
+            function list_change(list){
+                $('#user_list').empty();
+                for(var i=0;i<list.length;i++){
+                    $('#user_list').append("<div>"+list[i]+"</div>");
+                }
+            }
+        </script>
+    </body>
+</html>

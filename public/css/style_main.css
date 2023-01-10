@@ -1,12 +1,26 @@
-body{
+html,body{
+    height: 100%;
     margin: 0;
-    padding: 0;
-    background: #888888;
+    background: #CCCCCC;
 }
+
 button{
-    background: #FFFFFF;
+    margin:0;
+    border: 0;
+    padding: 6px 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    display: inline-block;
+    white-space: nowrap;                                    /*줄바꿈없애기*/
+    box-shadow: inset 1px 1px 0 hsl(0deg 0% 100% / 10%);    /*그림자*/
+}
+#wrap{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 #header{
+    min-height: 50px;
     height: 50px;
     margin: 0;
     display: flex;
@@ -14,17 +28,17 @@ button{
     align-items: center;
     text-align: center;
     background: #4c4c4c;
-}
+    cursor: default;
+ }
 #container{
+    height: 100%;
+    flex: 1;
     display: flex;
-    align-items: stretch;
     margin: 0;
-}
-#left_div{
-    width: 100%;
-    margin: auto;
-    text-align: center;
-    background: #CCCCCC;
+ }
+
+#main_div{
+    flex: 1;
 }
 #room_list{
     width: 300px;
@@ -34,14 +48,11 @@ button{
 
 }
 #right_div{
+    flex: none;
     width: 250px;
     display: flex;
     flex-direction: column;
     padding:5px;
-    top: 50px;
-    bottom: 0;
-    right: 0;
-    overflow: hidden;
     background: #333;
 }
 #myprofile{
@@ -57,7 +68,11 @@ button{
 }
 #make_room_btn{
     width: 100%;
-    height: 30px;
+    height: 40px;
+    margin: 5px 0;
+}
+#make_room_btn:hover{
+    border: 5px solid #FFE08C;
 }
 
 #f_div{
@@ -97,4 +112,35 @@ input[type=text]{
     border: 0;
     outline: none;
     box-shadow: none;
+}
+input[type=number]{
+    width: 90%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+}
+#chat_div{
+    flex: 1;    // 상위 div의 남는 영역 채우기
+}
+#chatLogs{
+    height: 30vh;
+    resize: none;
+    padding:5px;
+    margin-bottom: 5px;
+    background:#4c4c4c;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+#msgForm{
+    display: flex;
+    height: 30px;
+}
+#message{
+    flex: 1;
+    color:black;
+    border:0;
+}
+#msg_bin{
+    height: 32px;
 }

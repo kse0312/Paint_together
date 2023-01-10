@@ -1,4 +1,5 @@
-
+const rooms = require('./rooms');
+const mo    = require('./module');
 module.exports = function (app) {
     /** / 게시판으로 이동 */
     app.get('/', function(req, res){
@@ -28,14 +29,16 @@ module.exports = function (app) {
 
     app.post('/canvas',function(req, res){
         let info = {
+            number  : 0,
             subject : req.body.f_subject,
             text    : req.body.f_text,
-            numb    : req.body.f_numb,
+            count   : req.body.f_count,
             onoff   : (req.body.f_onoff==='on')?'on':'off',
             pwd     : req.body.f_passwd
         };
-        console.log(info);
+        info = rooms.make(info);
         res.render('canvas.html',info);
+        console.log("["+mo.timestamp()+"] Create New Room "+info.number);
     });
 
     app.get('/chat',function (req,res){

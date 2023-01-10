@@ -6,6 +6,7 @@ const cookie    = require('cookie-parser');
 const database = require('./dbconnect');
 const request  = require('./server');
 const socket   = require('./socket');
+const rooms    = require('./rooms');
 const mo       = require('./module');
 /* express 객체 생성 */
 const app  = express();

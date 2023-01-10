@@ -59,8 +59,13 @@ td{
     background: #444;
     position: relative;
     display: flex;
-    padding: 4px;
+    padding: 8px;
+    margin: 0;
     -webkit-box-align: start;
+
+}
+#room_numb{
+    text-align: center;
 }
 #left_tools{
     top: 50px;
@@ -119,10 +124,13 @@ td{
 /* 방제,인원수 글씨 */
 .inf_text{
     background:none;
-    margin-right:3px;
+    padding: 0;
     border:0;
+    cursor: default;
 }
-
+#room_numb{
+    width: 20px;
+}
 .chat_{
     background:white;
     color:black;

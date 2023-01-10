@@ -1,4 +1,5 @@
 const mo = require('./module');
+const rooms = require('./rooms');
 const SocketIO = require("socket.io");
 const req = require("express/lib/request");
 
@@ -12,7 +13,7 @@ const req = require("express/lib/request");
 //     room_cur: int       //현재 인원 수
 //     group   : []        //참가자 id
 // }]
-let rooms=[];
+
 module.exports = function (server) {
 
     // 이는 클라이언트가 /socket.io 경로 접근시 소켓 연결을 시작함을 의미
@@ -21,21 +22,42 @@ module.exports = function (server) {
         // 클라이언트와 연결이 되면 연결된 사실을 출력합니다.
         console.log("["+mo.timestamp()+" "+socket.id+"] Socket Connection Succeeded...");
 
-        socket.on('login',function (){
-
+        socket.on('main_chat',function (data){
+            console.log(data);
+            io.to("main").emit('receive_chat', data)
         })
-        socket.on('join',function (){
 
+        socket.on('main_login',function (){
+            socket.join('main');
         })
+
+        socket.on('login',function (data){
+            console.log(data);
+            socket.room=data.number;
+            socket.join(data.number);
+            console.log(socket.room);
+        })
+
         // 강제 종료 시 처리
         socket.on('force-disconnect', function () {
             socket.disconnect();
         })
+        socket.on("disconnecting", () => {
+            //console.log(Object.keys(self.rooms));
+
+        });
         // socket 연결 종료
         socket.on("disconnect", reason => {
+            if(socket.room!=null){
+                let room = socket.room;
+                console.log(room);
+                if(socket.rooms.has(room)===false){
+                    console.log(room+"번방의 인원 수가 0명입니다. 방을 삭제합니다.");
+                    rooms.delete(room);
+                }
+            }
             // 클라이언트와 연결이 끊어지면 이유를 출력해줍니다.
             console.log("["+mo.timestamp()+" "+socket.id+"] disconnect: "+reason);
-            console.log()
         })
     })
 
